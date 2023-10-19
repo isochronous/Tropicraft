@@ -555,6 +555,17 @@ public class TropicraftEntities {
             .renderer(() -> GibnutRenderer::new)
             .register();
 
+    public static final RegistryEntry<EntityType<ManateeEntity>> MANATEE = REGISTRATE.entity("manatee", ManateeEntity::new, MobCategory.WATER_CREATURE)
+            .properties(b -> b.sized(2.0F, 1.3F)
+                    .setTrackingRange(5)
+                    .setUpdateInterval(2)
+                    .setShouldReceiveVelocityUpdates(true))
+            .spawnPlacement(SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, TropicraftEntities::canSpawnOceanWaterMob)
+            .attributes(ManateeEntity::createAttributes)
+            .loot(TropicraftEntities::noDrops)
+            .renderer(() -> ManateeRenderer::new)
+            .register();
+
     public static boolean canAnimalSpawn(EntityType<? extends Mob> animal, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, RandomSource random) {
         BlockState groundState = worldIn.getBlockState(pos.below());
         return groundState.getBlock() == Blocks.GRASS_BLOCK

@@ -69,6 +69,7 @@ public class TropicraftRenderLayers {
     public static ModelLayerLocation TAPIR_LAYER;
     public static ModelLayerLocation SPIDER_MONKEY_LAYER;
     public static ModelLayerLocation WHITE_LIPPED_PECCARY_LAYER;
+    public static ModelLayerLocation GIBNUT_LAYER;
     public static ModelLayerLocation CHEST_SCUBA_LAYER;
     public static ModelLayerLocation FEET_SCUBA_LAYER;
     public static ModelLayerLocation HEAD_SCUBA_LAYER;
@@ -122,6 +123,7 @@ public class TropicraftRenderLayers {
         TAPIR_LAYER = registerMain("tapir", TapirModel::create, event);
         SPIDER_MONKEY_LAYER = registerMain("spider_monkey", SpiderMonkeyModel::create, event);
         WHITE_LIPPED_PECCARY_LAYER = registerMain("white_lipped_peccary", WhiteLippedPeccaryModel::create, event);
+        GIBNUT_LAYER = registerMain("gibnut", GibnutModel::create, event);
 
         //ArrayList<MaskArmorProvider> MASK_PROVIDER = new ArrayList<>();
         final List<ItemEntry<AshenMaskItem>> masks = TropicraftItems.ASHEN_MASKS.values().asList();

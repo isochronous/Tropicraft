@@ -544,6 +544,17 @@ public class TropicraftEntities {
 //                .setShouldReceiveVelocityUpdates(true);
 //    }
 
+    public static final RegistryEntry<EntityType<GibnutEntity>> GIBNUT = REGISTRATE.entity("gibnut", GibnutEntity::new, MobCategory.MONSTER)
+            .properties(b -> b.sized(0.7F, 0.3F)
+                    .setTrackingRange(8)
+                    .setUpdateInterval(3)
+                    .setShouldReceiveVelocityUpdates(true))
+            .spawnPlacement(SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, TropicraftEntities::canAnimalSpawn)
+            .attributes(GibnutEntity::createAttributes)
+            .loot(TropicraftEntities::noDrops)
+            .renderer(() -> GibnutRenderer::new)
+            .register();
+
     public static boolean canAnimalSpawn(EntityType<? extends Mob> animal, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, RandomSource random) {
         BlockState groundState = worldIn.getBlockState(pos.below());
         return groundState.getBlock() == Blocks.GRASS_BLOCK

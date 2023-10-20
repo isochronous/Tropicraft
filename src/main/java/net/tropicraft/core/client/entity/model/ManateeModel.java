@@ -10,17 +10,26 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.util.Mth;
 import net.tropicraft.core.common.entity.underdasea.ManateeEntity;
 
 public class ManateeModel extends HierarchicalModel<ManateeEntity> {
-    private final ModelPart body_base;
-    private final ModelPart bb_main;
+    private final ModelPart body;
+    private final ModelPart head;
+    private final ModelPart tailBase;
+    private final ModelPart tailFanMain;
+    private final ModelPart armLeft;
+    private final ModelPart armRight;
     private final ModelPart root;
 
     public ManateeModel(ModelPart root) {
         this.root = root;
-        this.body_base = root.getChild("body_base");
-        this.bb_main = root.getChild("bb_main");
+        body = root.getChild("body_base");
+        head = body.getChild("head_base");
+        tailBase = body.getChild("tail_base");
+        tailFanMain = tailBase.getChild("tail_fan_main");
+        armLeft = body.getChild("arm_left");
+        armRight = body.getChild("arm_right");
     }
 
     public static LayerDefinition create() {
@@ -45,20 +54,42 @@ public class ManateeModel extends HierarchicalModel<ManateeEntity> {
 
         PartDefinition arm_right = body_base.addOrReplaceChild("arm_right", CubeListBuilder.create().texOffs(35, 84).addBox(-1.0F, -1.0F, -2.0F, 2.0F, 10.0F, 5.0F, new CubeDeformation(0.0F)), PartPose.offset(-9.0F, 10.0F, -25.0F));
 
-        PartDefinition bb_main = partdefinition.addOrReplaceChild("bb_main", CubeListBuilder.create().texOffs(-18, -18).addBox(-10.0F, -16.0F, -9.0F, 1.0F, 16.0F, 19.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
-
         return LayerDefinition.create(meshdefinition, 128, 128);
     }
 
     @Override
-    public void setupAnim(ManateeEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(ManateeEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float headYaw, float headPitch) {
+        body.getAllParts().forEach(ModelPart::resetPose);
 
+        float partialTicks = ageInTicks - entity.tickCount;
+        body.xRot = entity.getXBodyRot(partialTicks) * Mth.DEG_TO_RAD;
+        ModelAnimator.look(head, headYaw * 0.25f, Mth.clamp(headPitch, 0.0f, 30.0f));
+        head.xRot -= body.xRot;
+
+        try (ModelAnimator.Cycle idle = ModelAnimator.cycle(ageInTicks * 0.01f, 1.0f)) {
+            body.y += idle.eval(1.0f, 0.6f);
+        }
+
+        try (ModelAnimator.Cycle swim = ModelAnimator.cycle(limbSwing * 0.125f, Math.min(limbSwingAmount, 0.8f))) {
+            body.y += swim.eval(1.0f, 2.0f, 0.65f, 0.0f);
+            head.xRot += swim.eval(1.0f, 0.125f, -0.2f, 0.25f);
+            body.xRot += swim.eval(1.0f, 0.125f, 0.0f, 0.0f);
+            tailBase.xRot += swim.eval(1.0f, 0.75f, 0.25f, 0.0f);
+            tailFanMain.xRot += swim.eval(1.0f, 1.5f, 0.5f, 0.0f);
+
+            armLeft.xRot += swim.eval(0.5f, 1.0f, 0.0f, 1.0f);
+            armLeft.yRot += swim.eval(0.5f, 2.0f, 0.6f, 2.0f);
+            armLeft.zRot += swim.eval(0.5f, -1.5f, 0.4f, -1.5f);
+
+            armRight.xRot += swim.eval(0.5f, 1.0f, 0.0f, 1.0f);
+            armRight.yRot -= swim.eval(0.5f, 2.0f, 0.6f, 2.0f);
+            armRight.zRot -= swim.eval(0.5f, -1.5f, 0.4f, -1.5f);
+        }
     }
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        body_base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        bb_main.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override

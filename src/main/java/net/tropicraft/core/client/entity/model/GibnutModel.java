@@ -10,15 +10,38 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.util.Mth;
+import net.tropicraft.core.common.entity.passive.GibnutEntity;
 
-public class GibnutModel<T extends Entity> extends TropicraftAgeableModel<T> {
-    private final ModelPart body_base;
-    private final ModelPart head_base;
+public class GibnutModel extends TropicraftAgeableHierarchicalModel<GibnutEntity> {
+    private final ModelPart root;
+    private final ModelPart body;
+    private final ModelPart head;
+    private final ModelPart legBackLeft;
+    private final ModelPart legBackRight;
+    private final ModelPart legFrontLeft;
+    private final ModelPart legFrontRight;
+    private final ModelPart earLeft;
+    private final ModelPart earRight;
+    private final ModelPart whiskerLeft1;
+    private final ModelPart whiskerLeft2;
+    private final ModelPart whiskerRight1;
+    private final ModelPart whiskerRight2;
 
     public GibnutModel(ModelPart root) {
-        this.body_base = root.getChild("body_base");
-        this.head_base = body_base.getChild("head_base");
+        this.root = root;
+        body = root.getChild("body_base");
+        head = body.getChild("head_base");
+        legBackLeft = body.getChild("leg_back_left");
+        legBackRight = body.getChild("leg_back_right");
+        legFrontLeft = body.getChild("leg_front_left");
+        legFrontRight = body.getChild("leg_front_right");
+        earLeft = head.getChild("ear_left");
+        earRight = head.getChild("ear_right");
+        whiskerLeft1 = head.getChild("whisker_left1");
+        whiskerLeft2 = head.getChild("whisker_left2");
+        whiskerRight1 = head.getChild("whisker_right1");
+        whiskerRight2 = head.getChild("whisker_right2");
     }
 
     public static LayerDefinition create() {
@@ -61,22 +84,58 @@ public class GibnutModel<T extends Entity> extends TropicraftAgeableModel<T> {
     }
 
     @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(GibnutEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float headYaw, float headPitch) {
+        body.getAllParts().forEach(ModelPart::resetPose);
 
+        ModelAnimator.look(head, headYaw, headPitch);
+
+        try (ModelAnimator.Cycle walk = ModelAnimator.cycle(limbSwing * 0.125f, limbSwingAmount)) {
+            legFrontLeft.xRot = walk.eval(1.0f, 1.0f);
+            legFrontRight.xRot = walk.eval(-1.0f, 1.0f);
+            legBackLeft.xRot = walk.eval(-1.0f, 1.0f);
+            legBackRight.xRot = walk.eval(1.0f, 1.0f);
+            body.y += walk.eval(2.0f, 0.5f, 0.5f, 0.0f);
+            body.zRot += walk.eval(1.0f, 0.15f);
+        }
+
+        if (entity.isVibing()) {
+            try (ModelAnimator.Cycle vibe = ModelAnimator.cycle(ageInTicks * 0.1f, 1.0f)) {
+                head.xRot += vibe.eval(1.0f, 0.1f);
+            }
+        } else {
+            try (ModelAnimator.Cycle sniff = ModelAnimator.cycle(ageInTicks, 1.0f)) {
+                head.xRot += sniff.twitch(40.0f, 0.15f, -0.08f);
+            }
+        }
+
+        try (ModelAnimator.Cycle whiskers = ModelAnimator.cycle(ageInTicks * 0.3f, 0.025f)) {
+            whiskerLeft1.xRot += whiskers.eval(1.0f, 1.0f, 0.25f, 0.0f);
+            whiskerLeft2.xRot += whiskers.eval(1.0f, 1.0f, 0.0f, 0.0f);
+            whiskerRight1.xRot += whiskers.eval(1.0f, 1.0f, 0.0f, 0.0f);
+            whiskerRight2.xRot += whiskers.eval(1.0f, 1.0f, 0.25f, 0.0f);
+        }
+
+        try (ModelAnimator.Cycle idle = ModelAnimator.cycle(ageInTicks, 1.0f)) {
+            earLeft.xRot += idle.twitch(7.0f, 0.22f, 1.0f);
+            earRight.xRot += idle.twitch(7.0f, 0.18f, 1.0f);
+        }
     }
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        body_base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        poseStack.pushPose();
+        poseStack.translate(0.0f, 0.0f, -1.5f / 16.0f);
+        super.renderToBuffer(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        poseStack.popPose();
     }
 
     @Override
-    protected ModelPart getHead() {
-        return head_base;
+    protected ModelPart head() {
+        return head;
     }
 
     @Override
-    protected ModelPart getBody() {
-        return body_base;
+    protected ModelPart root() {
+        return root;
     }
 }

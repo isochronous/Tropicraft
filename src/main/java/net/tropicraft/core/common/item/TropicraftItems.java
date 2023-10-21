@@ -384,6 +384,9 @@ public class TropicraftItems {
     public static final ItemEntry<Item> GIBNUT_SPAWN_EGG = spawnEgg("gibnut_spawn_egg", TropicraftEntities.GIBNUT, 0x482d1c, 0x83756e).register();
     public static final ItemEntry<Item> MANATEE_SPAWN_EGG = spawnEgg("manatee_spawn_egg", TropicraftEntities.MANATEE, 0x696758, 0xbdb4aa).register();
     public static final ItemEntry<Item> SLENDER_HARVEST_MOUSE_SPAWN_EGG = spawnEgg("slender_harvest_mouse_spawn_egg", TropicraftEntities.SLENDER_HARVEST_MOUSE, 0xaf7a41, 0xe6d7bf).register();
+    public static final ItemEntry<Item> KEEL_BILLED_TOUCAN_SPAWN_EGG = spawnEgg("keel_billed_toucan_spawn_egg", TropicraftEntities.KEEL_KILLED_TOUCAN, 0x08060d, 0xe5dc5b)
+            .lang("Keel-billed Toucan Spawn Egg")
+            .register();
 
     private static <T extends Mob> ItemBuilder<Item, Registrate> spawnEgg(final String name, final RegistryEntry<EntityType<T>> entity, final int backgroundColor, final int highlightColor) {
         return REGISTRATE.item(name, p -> (Item) new ForgeSpawnEggItem(entity, backgroundColor, highlightColor, p))

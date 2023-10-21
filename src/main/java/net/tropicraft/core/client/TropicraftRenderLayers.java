@@ -72,6 +72,7 @@ public class TropicraftRenderLayers {
     public static ModelLayerLocation GIBNUT_LAYER;
     public static ModelLayerLocation MANATEE_LAYER;
     public static ModelLayerLocation SLENDER_HARVEST_MOUSE_LAYER;
+    public static ModelLayerLocation KEEL_BILLED_TOUCAN_LAYER;
 
     // Scuba
     public static ModelLayerLocation CHEST_SCUBA_LAYER;
@@ -130,6 +131,7 @@ public class TropicraftRenderLayers {
         GIBNUT_LAYER = registerMain("gibnut", GibnutModel::create, event);
         MANATEE_LAYER = registerMain("manatee", ManateeModel::create, event);
         SLENDER_HARVEST_MOUSE_LAYER = registerMain("slender_harvest_mouse", SlenderHarvestMouseModel::create, event);
+        KEEL_BILLED_TOUCAN_LAYER = registerMain("keel_billed_toucan", KeelBilledToucanModel::create, event);
 
         //ArrayList<MaskArmorProvider> MASK_PROVIDER = new ArrayList<>();
         final List<ItemEntry<AshenMaskItem>> masks = TropicraftItems.ASHEN_MASKS.values().asList();

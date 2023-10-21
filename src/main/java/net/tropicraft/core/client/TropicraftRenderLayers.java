@@ -71,6 +71,7 @@ public class TropicraftRenderLayers {
     public static ModelLayerLocation GIBNUT_LAYER;
     public static ModelLayerLocation MANATEE_LAYER;
     public static ModelLayerLocation SLENDER_HARVEST_MOUSE_LAYER;
+    public static ModelLayerLocation TOUCAN_LAYER;
 
     // Scuba
     public static ModelLayerLocation CHEST_SCUBA_LAYER;
@@ -129,6 +130,7 @@ public class TropicraftRenderLayers {
         GIBNUT_LAYER = registerMain("gibnut", GibnutModel::create, event);
         MANATEE_LAYER = registerMain("manatee", ManateeModel::create, event);
         SLENDER_HARVEST_MOUSE_LAYER = registerMain("slender_harvest_mouse", SlenderHarvestMouseModel::create, event);
+        TOUCAN_LAYER = registerMain("toucan", ToucanModel::create, event);
 
         HEADPIECE_LAYER = registerMain("headpiece", PlayerHeadpieceModel::create, event);
         HEAD_SCUBA_LAYER = registerMain("scuba_goggles", ModelScubaGear::create, event);

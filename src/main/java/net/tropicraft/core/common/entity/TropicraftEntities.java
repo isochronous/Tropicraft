@@ -577,6 +577,18 @@ public class TropicraftEntities {
             .renderer(() -> SlenderHarvestMouseRenderer::new)
             .register();
 
+    public static final RegistryEntry<EntityType<ToucanEntity>> TOUCAN = REGISTRATE.entity("toucan", ToucanEntity::new, MobCategory.MONSTER)
+            .properties(b -> b.sized(0.5F, 0.5F)
+                    .setTrackingRange(8)
+                    .setUpdateInterval(3)
+                    .setShouldReceiveVelocityUpdates(true))
+            .spawnPlacement(SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ToucanEntity::canToucanSpawnOn)
+            .attributes(ToucanEntity::createAttributes)
+            .loot(TropicraftEntities::noDrops)
+            .renderer(() -> ToucanRenderer::new)
+            .tag(EntityTypeTags.FALL_DAMAGE_IMMUNE)
+            .register();
+
     public static boolean canAnimalSpawn(EntityType<? extends Mob> animal, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, RandomSource random) {
         BlockState groundState = worldIn.getBlockState(pos.below());
         return groundState.getBlock() == Blocks.GRASS_BLOCK

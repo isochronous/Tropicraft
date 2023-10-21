@@ -36,7 +36,7 @@ public class SlenderHarvestMouseEntity extends Animal {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new PanicGoal(this, 2.0));
+        this.goalSelector.addGoal(1, new PanicGoal(this, 1.5));
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0));
         this.goalSelector.addGoal(3, new TemptGoal(this, 1.25, BREEDING_ITEMS.get(), false));
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.25));
@@ -48,7 +48,7 @@ public class SlenderHarvestMouseEntity extends Animal {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 5.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.35F);
+                .add(Attributes.MOVEMENT_SPEED, 0.2F);
     }
 
     @Override
@@ -61,5 +61,10 @@ public class SlenderHarvestMouseEntity extends Animal {
     @Override
     public AgeableMob getBreedOffspring(ServerLevel pLevel, AgeableMob pOtherParent) {
         return TropicraftEntities.SLENDER_HARVEST_MOUSE.get().create(this.level());
+    }
+
+    @Override
+    protected int calculateFallDamage(final float fallDistance, final float damageMultiplier) {
+        return super.calculateFallDamage(fallDistance, damageMultiplier) / 4;
     }
 }

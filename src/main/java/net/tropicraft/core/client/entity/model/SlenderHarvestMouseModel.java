@@ -1,7 +1,5 @@
 package net.tropicraft.core.client.entity.model;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -11,13 +9,33 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.tropicraft.core.common.entity.passive.SlenderHarvestMouseEntity;
 
-public class SlenderHarvestMouseModel<T extends SlenderHarvestMouseEntity> extends TropicraftAgeableModel<T> {
-    private final ModelPart body_base;
+public class SlenderHarvestMouseModel<T extends SlenderHarvestMouseEntity> extends TropicraftAgeableHierarchicalModel<T> {
+    private final ModelPart root;
+    private final ModelPart body;
     private final ModelPart head;
+    private final ModelPart legBackLeft;
+    private final ModelPart legBackRight;
+    private final ModelPart legFrontLeft;
+    private final ModelPart legFrontRight;
+    private final ModelPart earLeft;
+    private final ModelPart earRight;
+    private final ModelPart tail1;
+    private final ModelPart tail2;
+    private final ModelPart tail3;
 
     public SlenderHarvestMouseModel(ModelPart root) {
-        this.body_base = root.getChild("body_base");
-        this.head = body_base.getChild("head");
+        this.root = root;
+        body = root.getChild("body_base");
+        head = body.getChild("head");
+        legBackLeft = body.getChild("leg_back_left");
+        legBackRight = body.getChild("leg_back_right");
+        legFrontLeft = body.getChild("leg_front_left");
+        legFrontRight = body.getChild("leg_front_right");
+        earLeft = head.getChild("cute_lil_ear_left");
+        earRight = head.getChild("cute_lil_ear_right");
+        tail1 = body.getChild("tail1");
+        tail2 = tail1.getChild("tail2");
+        tail3 = tail2.getChild("tail3");
     }
 
     public static LayerDefinition create() {
@@ -52,22 +70,42 @@ public class SlenderHarvestMouseModel<T extends SlenderHarvestMouseEntity> exten
     }
 
     @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float headYaw, float headPitch) {
+        body.getAllParts().forEach(ModelPart::resetPose);
 
+        ModelAnimator.look(head, headYaw, headPitch + 20.0f);
+
+        try (ModelAnimator.Cycle walk = ModelAnimator.cycle(limbSwing * 0.8f, limbSwingAmount * 1.5f)) {
+            legFrontLeft.xRot = walk.eval(1.0f, 1.0f);
+            legFrontRight.xRot = walk.eval(-1.0f, 1.0f);
+            legBackLeft.xRot = walk.eval(-1.0f, 1.0f);
+            legBackRight.xRot = walk.eval(1.0f, 1.0f);
+            body.y += walk.eval(2.0f, 0.125f, 0.5f, 0.0f);
+            body.x += walk.eval(1.0f, 0.125f, 0.5f, 0.0f);
+
+            tail1.yRot += walk.eval(1.0f, 0.2f, 0.2f, 0.0f);
+            tail2.yRot += walk.eval(1.0f, 0.2f, 0.3f, 0.0f);
+            tail3.yRot += walk.eval(1.0f, 0.4f, 0.5f, 0.0f);
+        }
+
+        try (ModelAnimator.Cycle idle = ModelAnimator.cycle(ageInTicks, 1.0f)) {
+            head.xRot += idle.eval(0.3f, 0.0125f);
+        }
+
+        try (ModelAnimator.Cycle idle = ModelAnimator.cycle(ageInTicks, 1.0f)) {
+            earLeft.xRot += idle.twitch(7.0f, 0.22f, 1.0f);
+            earRight.xRot += idle.twitch(7.0f, 0.18f, 1.0f);
+            tail3.xRot += idle.twitch(15.0f, 0.15f, 0.5f);
+        }
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        body_base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    protected ModelPart root() {
+        return root;
     }
 
     @Override
-    protected ModelPart getHead() {
+    protected ModelPart head() {
         return head;
-    }
-
-    @Override
-    protected ModelPart getBody() {
-        return body_base;
     }
 }

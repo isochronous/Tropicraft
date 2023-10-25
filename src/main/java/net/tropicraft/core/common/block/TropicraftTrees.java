@@ -58,6 +58,7 @@ public class TropicraftTrees {
 
         return new ConfiguredFeature<>(Feature.TREE, config);
     });
+    public static final AbstractTreeGrower PLANTAIN = create("plantain");
 
     public static final AbstractTreeGrower RAINFOREST = create((server, random, beehive) -> {
         final int treeType = random.nextInt(4);
